@@ -1,102 +1,88 @@
-import React from 'react';
-import Searchbar from './Searchbar/Searchbar';
+import { useEffect, useState } from 'react';
+import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { fetchImages } from '../services/api';
-import Modal from './Modal/Modal';
+import { Modal } from './Modal/Modal';
 import { InfinitySpin } from 'react-loader-spinner';
 import { Button } from './Button/Button';
 
-export class App extends React.Component {
-  state = {
-    images: [],
-    isLoading: false,
-    page: 1,
-    inputValue: '',
-    currentPreview: '',
-  };
+export const App = () => {
+  const [images, setImages] = useState([]);
+  const [isLoading, setisLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [inputValue, setinputValue] = useState('');
+  const [currentPreview, setcurrentPreview] = useState('');
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.inputValue !== this.state.inputValue) {
-      this.getImages(this.state.inputValue);
+  useEffect(() => {
+    if (!inputValue) {
+      return;
     }
-    if (
-      prevState.page !== this.state.page &&
-      prevState.inputValue === this.state.inputValue
-    ) {
-      this.getImages(this.state.inputValue);
+    getImages(inputValue);
+  }, [inputValue]);
+
+  useEffect(() => {
+    if (!inputValue) {
+      return;
     }
-  }
+    getImages(inputValue);
+  }, [page]);
 
-  getImages = key => {
-    this.setState({ isLoading: true });
+  const getImages = key => {
+    setisLoading(true);
 
-    fetchImages(key, this.state.page)
+    fetchImages(key, page)
       .then(({ data: { hits } }) => {
-        this.setState(prevState => {
-          return {
-            images: [...prevState.images, ...hits],
-          };
-        });
+        setImages([...images, ...hits]);
       })
       .catch(error => console.log(error))
       .finally(() => {
-        this.setState({ isLoading: false });
+        setisLoading(false);
       });
   };
 
-  getInputValue = value => {
-    this.setState({ inputValue: value, images: [], page: 1 });
+  const getInputValue = value => {
+    setinputValue(value);
+    setImages([]);
+    setPage(1);
   };
 
-  loadMore = () => {
-    this.setState(prevState => {
-      return {
-        page: prevState.page + 1,
-      };
-    });
+  const loadMore = () => {
+    setPage(page + 1);
   };
 
-  openModal = url => {
-    this.setState({ currentPreview: url });
+  const openModal = url => {
+    setcurrentPreview(url);
   };
 
-  closeModal = () => {
-    this.setState({ currentPreview: '' });
+  const closeModal = () => {
+    setcurrentPreview('');
   };
 
-  render() {
-    const { images, currentPreview, isLoading } = this.state;
-    return (
-      <>
-        <Searchbar onSubmit={this.getInputValue} />
+  return (
+    <>
+      <Searchbar onSubmit={getInputValue} />
 
-        {images.length !== 0 && (
-          <>
-            <ImageGallery
-              images={this.state.images}
-              openModal={this.openModal}
-            />
+      {images.length !== 0 && (
+        <>
+          <ImageGallery images={images} openModal={openModal} />
 
-            {!isLoading && (
-              <Button text="Load more" clickHandler={this.loadMore} />
-            )}
-          </>
-        )}
-        {isLoading && (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <InfinitySpin width="400" color="#4c2ef7" />
-          </div>
-        )}
-        {currentPreview && (
-          <Modal closeModal={this.closeModal} showModal={currentPreview} />
-        )}
-      </>
-    );
-  }
-}
+          {!isLoading && <Button text="Load more" clickHandler={loadMore} />}
+        </>
+      )}
+      {isLoading && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <InfinitySpin width="400" color="#4c2ef7" />
+        </div>
+      )}
+      {currentPreview && (
+        <Modal closeModal={closeModal} showModal={currentPreview} />
+      )}
+    </>
+  );
+};

@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import { useState } from 'react';
 import {
   SearchHeader,
   SearchForm,
@@ -7,40 +7,35 @@ import {
   SearchFormInput,
 } from './Searchbar.styled';
 
-export default class Searchbar extends PureComponent {
-  state = {
-    inputValue: '',
-    isMoviesShown: false,
-  };
+export const Searchbar = ({ onSubmit }) => {
+  const [inputValue, setInputValue] = useState('');
 
-  submitHandler = event => {
+  const submitHandler = event => {
     event.preventDefault();
-    this.props.onSubmit(this.state.inputValue);
+    onSubmit(inputValue);
   };
 
-  onSearch = e => {
-    this.setState({ inputValue: e.currentTarget.value });
+  const onSearch = e => {
+    setInputValue(e.currentTarget.value);
   };
 
-  render() {
-    return (
-      <div>
-        <SearchHeader>
-          <SearchForm onSubmit={this.submitHandler}>
-            <SearchFormButton type="submit">
-              <SearchFormButtonLabel>Search</SearchFormButtonLabel>
-            </SearchFormButton>
+  return (
+    <div>
+      <SearchHeader>
+        <SearchForm onSubmit={submitHandler}>
+          <SearchFormButton type="submit">
+            <SearchFormButtonLabel>Search</SearchFormButtonLabel>
+          </SearchFormButton>
 
-            <SearchFormInput
-              type="text"
-              autoComplete="off"
-              autoFocus
-              placeholder="Search images and photos"
-              onChange={this.onSearch}
-            />
-          </SearchForm>
-        </SearchHeader>
-      </div>
-    );
-  }
-}
+          <SearchFormInput
+            type="text"
+            autoComplete="off"
+            autoFocus
+            placeholder="Search images and photos"
+            onChange={onSearch}
+          />
+        </SearchForm>
+      </SearchHeader>
+    </div>
+  );
+};
