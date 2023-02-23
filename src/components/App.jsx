@@ -14,31 +14,20 @@ export const App = () => {
   const [currentPreview, setcurrentPreview] = useState('');
 
   useEffect(() => {
-    if (!inputValue) {
-      return;
+    if (inputValue) {
+      setisLoading(true);
+      fetchImages(inputValue, page)
+        .then(({ data: { hits } }) => {
+          setImages(prevImages => {
+            return [...prevImages, ...hits];
+          });
+        })
+        .catch(error => console.log(error))
+        .finally(() => {
+          setisLoading(false);
+        });
     }
-    getImages(inputValue);
-  }, [inputValue]);
-
-  useEffect(() => {
-    if (!inputValue) {
-      return;
-    }
-    getImages(inputValue);
-  }, [page]);
-
-  const getImages = key => {
-    setisLoading(true);
-
-    fetchImages(key, page)
-      .then(({ data: { hits } }) => {
-        setImages([...images, ...hits]);
-      })
-      .catch(error => console.log(error))
-      .finally(() => {
-        setisLoading(false);
-      });
-  };
+  }, [page, inputValue]);
 
   const getInputValue = value => {
     setinputValue(value);

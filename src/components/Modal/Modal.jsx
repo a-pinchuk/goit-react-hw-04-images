@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { Overlay, ModalWindow } from './Modal.styled';
 import { createPortal } from 'react-dom';
+import PropTypes from 'prop-types';
 
 const modalRoot = document.querySelector('#modal-root');
 
 export const Modal = ({ closeModal, showModal }) => {
   useEffect(() => {
     window.addEventListener('keydown', closeEscModal);
-
     return () => {
       window.removeEventListener('keydown', closeEscModal);
     };
@@ -35,4 +35,9 @@ export const Modal = ({ closeModal, showModal }) => {
     </div>,
     modalRoot
   );
+};
+
+Modal.propTypes = {
+  closeModal: PropTypes.func.isRequired,
+  showModal: PropTypes.string.isRequired,
 };

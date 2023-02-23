@@ -6,6 +6,7 @@ import {
   SearchFormButtonLabel,
   SearchFormInput,
 } from './Searchbar.styled';
+import PropTypes from 'prop-types';
 
 export const Searchbar = ({ onSubmit }) => {
   const [inputValue, setInputValue] = useState('');
@@ -38,4 +39,8 @@ export const Searchbar = ({ onSubmit }) => {
       </SearchHeader>
     </div>
   );
+};
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
 };
